@@ -60,7 +60,7 @@ contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
     // Special Functions
 
     /**
-     * @param minEntryFee - The minimum entry fee to enter the raffle (enter as USD, will be converted to ETH equivalent)
+     * @param minEntryFee - The minimum entry fee to enter the raffle in Wei
      * @param timeInterval - The amount of time to wait between raffles
      * @dev Use docs for further info on below vars (https://docs.chain.link/docs/vrf/v2/subscription/examples/get-a-random-number/)
      * @param coordinatorAddr - The chainlink coordinator address we use to generate a random number
