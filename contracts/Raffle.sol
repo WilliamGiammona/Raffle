@@ -17,7 +17,7 @@ error Raffle__NotEnoughParticipants();
  * @author William Giammona
  * @notice This contract is for creating a trustless, untamperable, decentralized Raffle
  * @notice PLEASE CHECK ALL RELEVANT LAWS AND LEGAL REQUIREMENTS BEFORE DEPLOYING TO MAINNET
- * @dev This contract uses Chainlink VRF V2 and Chainlink Aggregator contracts
+ * @dev This contract uses the Chainlink VRF V2 contract
  */
 
 contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
