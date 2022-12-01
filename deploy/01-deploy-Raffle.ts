@@ -10,12 +10,10 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     const chainId: number = network.config.chainId!;
     const COORDINATOR_FUND_AMOUNT = ethers.utils.parseEther("30");
 
-    let PriceFeedAddress, CoordinatorAddress: string;
+    let CoordinatorAddress: string;
     let subscriptionId: number;
 
     if (chainId === 31337 /*31337 is the hardhat and local host chain Id*/) {
-        const PriceFeedContract = await ethers.getContract("MockV3Aggregator");
-        PriceFeedAddress = PriceFeedContract.address;
         const CoordinatorContract = await ethers.getContract("VRFCoordinatorV2Mock");
         CoordinatorAddress = CoordinatorContract.address;
         // Create subscription on local hh
@@ -25,7 +23,6 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
         // Fund the Subscription
         await CoordinatorContract.fundSubscription(subscriptionId, COORDINATOR_FUND_AMOUNT);
     } else {
-        PriceFeedAddress = networkConfig[chainId]["ethPriceFeedAddress"]!;
         CoordinatorAddress = networkConfig[chainId]["coordinatorAddress"]!;
         subscriptionId = networkConfig[chainId]["subscriptionId"]!;
     }
@@ -40,7 +37,6 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     const args: [number, string, string, string, string, number, number, number] = [
         minEntryFee,
         timeInterval,
-        PriceFeedAddress,
         CoordinatorAddress,
         keyHash,
         subscriptionId,

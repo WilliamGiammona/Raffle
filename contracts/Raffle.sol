@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "./PriceConverter.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
@@ -23,8 +21,7 @@ error Raffle__NotEnoughParticipants();
  */
 
 contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
-    using PriceConverter for uint256;
-
+    
     // Events
     event EnteredRaffle(address indexed participant);
     event RequestSent(uint256 indexed requestId);
@@ -45,7 +42,6 @@ contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
     // Immutable / Constant vars
     uint256 private immutable i_minEntryFee;
     uint256 private immutable i_timeInterval;
-    AggregatorV3Interface private immutable i_priceFeedContract;
     VRFCoordinatorV2Interface private immutable i_coordinatorContract;
     bytes32 private immutable i_keyHash;
     uint64 private immutable i_subscriptionId;
@@ -66,9 +62,8 @@ contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
     /**
      * @param minEntryFee - The minimum entry fee to enter the raffle (enter as USD, will be converted to ETH equivalent)
      * @param timeInterval - The amount of time to wait between raffles
-     * @param priceFeedAddr - The chainlink price feed address we use to get ETH/USD price (https://docs.chain.link/docs/data-feeds/price-feeds/)
      * @dev Use docs for further info on below vars (https://docs.chain.link/docs/vrf/v2/subscription/examples/get-a-random-number/)
-     * @param coordinatorAddress - The chainlink coordinator address we use to generate a random number
+     * @param coordinatorAddr - The chainlink coordinator address we use to generate a random number
      * @param keyHash - How much to pay chainlink node in WEI to generate a random number (requestRandomWords())
      * @param subscriptionId - Id used to fund chainlink contracts
      * @param requestConfirmations - How many additional blocks need to be added to the chain after number generated
@@ -78,17 +73,15 @@ contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
     constructor(
         uint256 minEntryFee,
         uint256 timeInterval,
-        address priceFeedAddr,
-        address coordinatorAddress,
+        address coordinatorAddr,
         bytes32 keyHash,
         uint64 subscriptionId,
         uint16 requestConfirmations,
         uint32 callbackGasLimit
-    ) VRFConsumerBaseV2(coordinatorAddress) ConfirmedOwner(msg.sender) {
-        i_minEntryFee = minEntryFee * 1e18; /* multipy i_minEntryFee by 10^18 b/c ETH is 10^18 WEI */
+    ) VRFConsumerBaseV2(coordinatorAddr) ConfirmedOwner(msg.sender) {
+        i_minEntryFee = minEntryFee;
         i_timeInterval = timeInterval;
-        i_priceFeedContract = AggregatorV3Interface(priceFeedAddr);
-        i_coordinatorContract = VRFCoordinatorV2Interface(coordinatorAddress);
+        i_coordinatorContract = VRFCoordinatorV2Interface(coordinatorAddr);
         i_keyHash = keyHash;
         i_subscriptionId = subscriptionId;
         i_requestConfirmations = requestConfirmations;
@@ -118,7 +111,7 @@ contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
         if (s_raffleState != RaffleState.OPEN) {
             revert Raffle__NotOpen();
         }
-        if (msg.value.convertEthToUsd(i_priceFeedContract) < i_minEntryFee) {
+        if (msg.value < i_minEntryFee) {
             revert Raffle__NotEnoughETH();
         }
         address payable[] memory participants = s_participants;
@@ -190,9 +183,7 @@ contract Raffle is VRFConsumerBaseV2, ConfirmedOwner {
         return (request.fulfilled, request.randomWords);
     }
 
-    function getPriceFeedContract() public view returns (AggregatorV3Interface) {
-        return i_priceFeedContract;
-    }
+ 
 
     function getCoordinatorContract() public view returns (VRFCoordinatorV2Interface) {
         return i_coordinatorContract;

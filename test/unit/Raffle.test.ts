@@ -4,17 +4,16 @@ import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { network, deployments, ethers } from "hardhat";
 import { networkConfig } from "../../helper-hardhat-config";
-import { MockV3Aggregator, Raffle, VRFCoordinatorV2Mock } from "../../typechain-types";
+import { Raffle, VRFCoordinatorV2Mock } from "../../typechain-types";
 
 network.config.chainId !== 31337
     ? describe.skip
     : describe("Raffle", function () {
           let Raffle: Raffle;
-          let MockV3Aggregator: MockV3Aggregator;
           let VRFCoordinatorV2Mock: VRFCoordinatorV2Mock;
           let deployer: SignerWithAddress;
           let player1: SignerWithAddress;
-          const VAL = ethers.utils.parseEther(".25");
+          const VAL = ethers.utils.parseEther(".005");
           const chainId = network.config.chainId!;
 
           beforeEach(async function () {
@@ -23,7 +22,6 @@ network.config.chainId !== 31337
               player1 = accounts[1];
               await deployments.fixture(["all"]); //Runs every deployment w/ all tag
               Raffle = await ethers.getContract("Raffle", deployer);
-              MockV3Aggregator = await ethers.getContract("MockV3Aggregator", deployer);
               VRFCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock", deployer);
               Raffle = await Raffle.connect(deployer);
               const subscriptionId = Raffle.getSubscriptionId();
@@ -32,15 +30,11 @@ network.config.chainId !== 31337
 
           describe("constructor", function () {
               it("Correctly sets the minEntryFee", async function () {
-                  assert.equal((await Raffle.getMinEntryFee()).toString(), "50000000000000000000");
+                  assert.equal((await Raffle.getMinEntryFee()).toString(), VAL.toString());
               });
 
               it("Correctly sets the timeInterval", async function () {
                   assert.equal((await Raffle.getTimeInterval()).toString(), networkConfig[chainId]["timeInterval"]);
-              });
-
-              it("Correctly sets the priceFeed address", async function () {
-                  assert.equal(await Raffle.getPriceFeedContract(), MockV3Aggregator.address);
               });
 
               it("Correctly sets the coordinator address", async function () {
@@ -91,7 +85,7 @@ network.config.chainId !== 31337
               });
               it("Reverts if too little ETH sent", async function () {
                   await expect(
-                      Raffle.enterRaffle({ value: ethers.utils.parseEther(".02499999999") })
+                      Raffle.enterRaffle({ value: ethers.utils.parseEther(".00499999999") })
                   ).to.be.revertedWithCustomError(Raffle, "Raffle__NotEnoughETH");
               });
 
