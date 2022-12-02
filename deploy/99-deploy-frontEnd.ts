@@ -12,6 +12,8 @@ const deployFrontEnd = async function () {
         console.log("Updating Front End");
         updateContractAddresses();
         updateABI();
+        console.log("Front End Updated");
+        console.log("----------------------------------------------------");
     }
 };
 
@@ -38,4 +40,3 @@ async function updateABI() {
 
 export default deployFrontEnd;
 deployFrontEnd.tags = ["all", "FrontEnd"];
-

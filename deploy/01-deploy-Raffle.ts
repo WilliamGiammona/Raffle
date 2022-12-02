@@ -34,7 +34,7 @@ const deployRaffle: DeployFunction = async function (hre: HardhatRuntimeEnvironm
 
     console.log("Deploying Raffle.....");
 
-    const args: [number, string, string, string, string, number, number, number] = [
+    const args: [number, string, string, string, number, number, number] = [
         minEntryFee,
         timeInterval,
         CoordinatorAddress,
