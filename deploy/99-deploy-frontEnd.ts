@@ -8,7 +8,7 @@ import * as fs from "fs";
 const FRONT_END_ADDRESSES_FILE = "../raffle-front-end/constants/contractAddresses.json";
 const FRONT_END_ABI_FILE = "../raffle-front-end/constants/abi.json";
 const deployFrontEnd = async function () {
-    if (process.env.UPDATE_FRONT_END) {
+    if (process.env.UPDATE_FRONT_END === "true") {
         console.log("Updating Front End");
         updateContractAddresses();
         updateABI();
