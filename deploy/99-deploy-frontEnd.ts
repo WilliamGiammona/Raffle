@@ -41,9 +41,11 @@ async function updateABI() {
             contractAbis[contractName].push(Raffle.interface.format(ethers.utils.FormatTypes.json));
         }
     } else {
-        contractAbis[contractName] = [Raffle.interface.format(ethers.utils.FormatTypes.json)];
+        contractAbis[contractName] = Raffle.interface.format(ethers.utils.FormatTypes.json);
     }
-    fs.writeFileSync(FRONT_END_ABI_FILE, JSON.stringify(contractAbis));
+    console.log("test");
+    console.log({ contractAbis });
+    fs.writeFileSync(FRONT_END_ABI_FILE, contractAbis[contractName]);
 }
 
 export default deployFrontEnd;
