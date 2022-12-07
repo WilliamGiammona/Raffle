@@ -6,7 +6,7 @@ async function mockRequestRandomWords() {
     const accounts = await ethers.getSigners();
     let deployer = accounts[0];
     let player1 = accounts[1];
-    const Raffle: Raffle = await ethers.getContract("Raffle", deployer);
+    const Raffle: Raffle = await ethers.getContract("Raffle");
     const txResponse = await Raffle.requestRandomWords();
     const txReceipt = await txResponse.wait(1);
     const requestId = await Raffle.getLastRequestId();

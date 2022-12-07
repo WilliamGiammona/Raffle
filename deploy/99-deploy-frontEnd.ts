@@ -43,8 +43,7 @@ async function updateABI() {
     } else {
         contractAbis[contractName] = Raffle.interface.format(ethers.utils.FormatTypes.json);
     }
-    console.log("test");
-    console.log({ contractAbis });
+
     fs.writeFileSync(FRONT_END_ABI_FILE, contractAbis[contractName]);
 }
 
